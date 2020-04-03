@@ -20,7 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
 #ifndef USB_CAMERA_DRIVER__CAMERA_DRIVER_HPP_
 #define USB_CAMERA_DRIVER__CAMERA_DRIVER_HPP_
 
@@ -28,52 +27,50 @@ SOFTWARE.
 #include <iostream>
 #include "rclcpp/rclcpp.hpp"
 
-#include "std_msgs/msg/string.hpp"
-#include "sensor_msgs/msg/image.hpp"
 #include "sensor_msgs/msg/camera_info.hpp"
+#include "sensor_msgs/msg/image.hpp"
+#include "std_msgs/msg/string.hpp"
 
 #include "sensor_msgs/image_encodings.hpp"
 
 #include <camera_info_manager/camera_info_manager.h>
 #include <image_transport/image_transport.h>
 
-#include "opencv2/highgui/highgui.hpp"
 #include "cv_bridge/cv_bridge.h"
+#include "opencv2/highgui/highgui.hpp"
 
 namespace usb_camera_driver
 {
+class CameraDriver : public rclcpp::Node
+{
+ public:
+  explicit CameraDriver(const rclcpp::NodeOptions&);
+  ~CameraDriver(){};
 
-class CameraDriver : public rclcpp::Node {
-public:
-    explicit CameraDriver(const rclcpp::NodeOptions&);
-    ~CameraDriver() {};
-        
-private:
-    rclcpp::TimerBase::SharedPtr timer_;
-    cv::Mat frame;
-    cv::Mat flipped_frame;
-    cv::VideoCapture cap;
-    
-    cv_bridge::CvImage img_bridge;
+ private:
+  rclcpp::TimerBase::SharedPtr timer_;
+  cv::Mat frame;
+  cv::Mat flipped_frame;
+  cv::VideoCapture cap;
 
-    bool is_flipped;
+  cv_bridge::CvImage img_bridge;
 
-    std::string frame_id_;
-    int image_height_;
-    int image_width_;
-    int camera_id;
+  bool is_flipped;
 
-    std::shared_ptr<camera_info_manager::CameraInfoManager> cinfo_manager_;
-    image_transport::CameraPublisher camera_info_pub_;
-    
-    std::shared_ptr<sensor_msgs::msg::Image> image_msg_;
-    
-    std::shared_ptr<sensor_msgs::msg::Image> ConvertFrameToMessage(const cv::Mat & frame);
-    
-    void ImageCallback();
-    
+  std::string frame_id_;
+  int image_height_;
+  int image_width_;
+  int camera_id;
 
+  std::shared_ptr<camera_info_manager::CameraInfoManager> cinfo_manager_;
+  image_transport::CameraPublisher camera_info_pub_;
+  image_transport::CameraPublisher camera_info_pub2_;
+
+  std::shared_ptr<sensor_msgs::msg::Image> image_msg_;
+
+  std::shared_ptr<sensor_msgs::msg::Image> ConvertFrameToMessage(const cv::Mat& frame);
+
+  void ImageCallback();
 };
-} // namespace usb_camera_driver
-#endif //USB_CAMERA_DRIVER__CAMERA_DRIVER_HPP_
-
+}  // namespace usb_camera_driver
+#endif  // USB_CAMERA_DRIVER__CAMERA_DRIVER_HPP_
